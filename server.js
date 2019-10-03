@@ -2,88 +2,41 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+const knex = require('knex');
+const register = require('./controllers/register');
+const signIn = require('./controllers/signIn');
+const profile = require('./controllers/profile');
+const image = require('./controllers/image');
+//const proxy = require('express-http-proxy');
+
 
 const app = express();
 
-const database = {
-	users: [
-		{
-			id: '123',
-			name: 'John',
-			email: 'john@gmail.com',
-			password: '1234',
-			entries: 0,
-			joined: new Date()
-		},
-		{
-			id: '124',
-			name: 'Sally',
-			email: 'sally@gmail.com',
-			password: '12345',
-			entries: 0,
-			joined: new Date()
-		}
-	]
-}
+const db = knex({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    user : 'postgres',
+    password : '',
+    database : 'smart-brain'
+  }
+});
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
+//app.use('proxy.rec.uba.ar:80', proxy('proxy.rec.uba.ar:80'));
 
-app.use((req, res, next) =>  {
+/*app.use((req, res, next) =>  {
 	next();
-});
+});*/
 
-app.get('/', (req, res) => {
-	res.json(database.users);
-});
-
-app.post('/signin', (req, res) => {
-	if(req.body.email === database.users[0].email && req.body.password === database.users[0].password ) {
-		res.json(database.users[0]);
-	} else {
-		res.status(400).json("error log in");
-	}
-});
-
-app.post('/register', (req, res) => {
-	const { email, name, password } = req.body;
-	database.users.push({
-			id: '125',
-			name: name,
-			email: email,
-			password: password,
-			entries: 0,
-			joined: new Date()
-
-	});
-	res.json(database.users[database.users.length-1]);
-});
-
-app.get('/profile/:id', (req, res) => {
-	const { id } = req.params;
-
-	database.users.forEach(user => {
-		if (user.id === id) {
-			return res.json(user);
-		} 
-	})
-
-	res.status(404).json('no such user.')
-});
-
-app.put('/image', (req, res) => {
-	const { id } = req.body;
-
-	database.users.forEach(user => {
-		if (user.id === id) {
-			user.entries++;
-			return res.json(user.entries);
-		} 
-	})
-
-	res.status(404).json('no found user.')
-});
+app.get('/', (req, res) => {res.json()});
+app.post('/signin', (req, res) => { signIn.handleSignIn(req, res, db, bcrypt) });
+app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) });
+app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, db) });
+app.put('/image', (req, res) => { image.handleImage(req, res, db) });
+app.post('/imageurl', (req, res) => { image.handleCallApi(req, res) });
 
 
 app.listen(3001);
