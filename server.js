@@ -35,5 +35,8 @@ app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, db) });
 app.put('/image', (req, res) => { image.handleImage(req, res, db) });
 app.post('/imageurl', (req, res) => { image.handleCallApi(req, res) });
 
+var port = process.env.PORT || 8080;
 
-app.listen(process.env.PORT || 3000);
+app.listen(port, function() {
+    console.log('Our app is running on http://localhost:' + port);
+});
