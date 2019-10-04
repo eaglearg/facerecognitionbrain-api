@@ -28,7 +28,7 @@ app.use(cors());
 	next();
 });*/
 
-app.get('/', (req, res) => {res.json()});
+app.get('/', (req, res) => {res.send("working")});
 app.post('/signin', (req, res) => { signIn.handleSignIn(req, res, db, bcrypt) });
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) });
 app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, db) });
