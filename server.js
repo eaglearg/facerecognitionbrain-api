@@ -7,8 +7,6 @@ const register = require('./controllers/register');
 const signIn = require('./controllers/signIn');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
-//const proxy = require('express-http-proxy');
-
 
 const app = express();
 
@@ -25,7 +23,6 @@ const db = knex({
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
-//app.use('proxy.rec.uba.ar:80', proxy('proxy.rec.uba.ar:80'));
 
 /*app.use((req, res, next) =>  {
 	next();
